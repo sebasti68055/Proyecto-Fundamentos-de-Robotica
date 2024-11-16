@@ -1,0 +1,20 @@
+<package>
+  <name>proyecto</name>
+  <version>0.1.0</version>
+  <description>
+    <p>Paquete para el proyecto de Fundamentos de Robótica UTEC 2024-2</p>
+    <p>Este paquete contiene los archivos necesarios para simular el comportamiento del robot</p>
+  </description>
+  <author email="jose.gil@utec.edu.pe">Ludovico Russo</author>
+  <maintainer email="jose.gil@utec.edu.pe" > </maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>gazebo</run_depend>
+  <export>
+    <architecture_independent />
+  </export>
+</package>
