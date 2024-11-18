@@ -36,6 +36,7 @@
       </geometry>
     </collision>
   </link>
+  
   <link
     name="link_1">
     <inertial>
@@ -76,12 +77,13 @@
       </geometry>
     </collision>
   </link>
+  
   <joint
     name="joint_1"
     type="continuous">
     <origin
-      xyz="0.057188 0.0059831 0.13343"
-      rpy="1.5708 6.9389E-16 -3.1416" />
+      xyz="0.0 0.0 0.13343"
+      rpy="1.571 0.0 -3.1416" />
     <parent
       link="base_link" />
     <child
@@ -89,6 +91,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
+
   <link
     name="link_2">
     <inertial>
@@ -129,6 +132,7 @@
       </geometry>
     </collision>
   </link>
+  
   <joint
     name="joint_2"
     type="continuous">
@@ -142,6 +146,7 @@
     <axis
       xyz="-0.88847 0.2908 0.35504" />
   </joint>
+
   <link
     name="link_3">
     <inertial>
@@ -182,6 +187,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="joint_3"
     type="continuous">
@@ -195,6 +201,7 @@
     <axis
       xyz="1 0 0" />
   </joint>
+
   <link
     name="link_4">
     <inertial>
@@ -235,6 +242,7 @@
       </geometry>
     </collision>
   </link>
+  
   <joint
     name="joint_4"
     type="continuous">
@@ -248,6 +256,7 @@
     <axis
       xyz="0 0 -1" />
   </joint>
+
   <link
     name="link_5">
     <inertial>
@@ -288,12 +297,13 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="joint_5"
     type="continuous">
     <origin
       xyz="0 0 -0.1053"
-      rpy="3.1416 1.1102E-14 3.1416" />
+      rpy="3.14159 0 3.14159" />
     <parent
       link="link_4" />
     <child
@@ -301,6 +311,7 @@
     <axis
       xyz="-1 0 0" />
   </joint>
+
   <link
     name="link_6">
     <inertial>
@@ -341,12 +352,13 @@
       </geometry>
     </collision>
   </link>
+
   <joint
     name="joint_6"
     type="continuous">
     <origin
       xyz="-0.0039 0 0.1636"
-      rpy="-1.5708 1.249E-14 0" />
+      rpy="-1.5708 0 0" />
     <parent
       link="link_5" />
     <child
@@ -354,4 +366,5 @@
     <axis
       xyz="0 -1 0" />
   </joint>
+
 </robot>
