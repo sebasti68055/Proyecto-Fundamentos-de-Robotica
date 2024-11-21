@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+import rospy
+from sensor_msgs.msg import JointState
+
+from markers import *
+from prfuncs import *
+
+if __name__ == '__main__':
+    
+ # Initialize the node
+ rospy.init_node("testKineControlPose")
+ print('starting motion ... ')
+ # Publisher: publish to the joint_states topic
+ pub = rospy.Publisher('joint_states', JointState, queue_size=1000)
+ # Markers for the current and desired positions
+ bmarker_current  = FrameMarker()
+ bmarker_desired = FrameMarker(0.5)
+ 
+ # Joint names
+ jnames = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6']
+ 
+ # Desired pose
+ Rd = np.array([[1,0,0],[0,1,0],[0,0,1]])
+ qd = Quaternion(matrix=Rd)
+ # Find an xd that the robot can reach
+ xd = np.array([0.4, 0.2, 0.3, qd.w, qd.x, qd.y, qd.z])
+ # Initial configuration
+ q0 = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+ 
+ # Resulting initial pose (end effector with respect to the base link)
+ T = fkine(q0)
+ x0 = TF2xyzquat(T)
+ 
+ # Markers for the current and the desired pose
+ bmarker_current.setPose(x0)
+ bmarker_desired.setPose(xd)
+ 
+ # Instance of the JointState message
+ jstate = JointState()
+ # Values of the message
+ jstate.header.stamp = rospy.Time.now()
+ jstate.name = jnames
+ # Add the head joint value (with value 0) to the joints
+ jstate.position = q0
+ 
+ # Frequency (in Hz) and control period 
+ freq = 100
+ dt = 1.0/freq
+ rate = rospy.Rate(freq)
+ 
+ # Initial joint configuration
+ q = copy(q0)
+ x = copy(x0)
+ quat = x[3:7]
+ # Initialize the derror vector (derivative of the error)
+ derror = np.zeros(7)
+ # Constante cinemática
+ k = 10
+ # Contador y tiempo y epsilon
+ cont = 0; t = 0; epsilon = 1e-1
+
+ # Main loop
+ #for i in range(1):
+ while not rospy.is_shutdown():
+  # Current time (needed for ROS)
+  jstate.header.stamp = rospy.Time.now()
+
+  # Jacobiano actual
+  J = jacobian_pose(q)
+
+  # Pose actual
+  T_act = fkine(q)
+  Pose_act = TF2xyzquat(T_act)
+
+  # Error actual
+  err_pose = PoseError(Pose_act, xd)
+  print('error: ', np.round(np.linalg.norm(err_pose), 2))
+
+ # Verificación de límite de error
+  if np.linalg.norm(err_pose) < epsilon:
+   print("Se llegó al punto deseado en {:.4} segundos".format(cont * dt))
+   print("Pose alcanzada: ", np.round(Pose_act, 3))
+   print("Pose deseada: ", np.round(xd, 3))
+   break
+
+ # Derivada del error
+  derror = -k * err_pose
+
+  # Calcular dq
+  try:
+   dq = np.linalg.pinv(J) @ derror
+  except Exception as ex:
+   dq = dpinv(J) @ derror
+
+  # Integrar configuración
+  q = q + dt * dq
+  x = TF2xyzquat(fkine(q))  # Actualizar pose actual
+  t += dt
+
+  # Incremento del contador
+  cont += 1
+
+  # Publish the message
+  jstate.position = q
+  pub.publish(jstate)
+  bmarker_desired.setPose(xd)
+  bmarker_current.setPose(x)
+
+  # Wait for the next iteration
+  rate.sleep()
